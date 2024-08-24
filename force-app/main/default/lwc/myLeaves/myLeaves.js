@@ -1,12 +1,12 @@
 import { LightningElement, wire } from 'lwc';
 import getMyLeaves from '@salesforce/apex/LeaveRequestController.getMyLeaves';
 const COLUMNS = [
-    {label : 'Request Id', fieldName : 'Name'},
-    {label : 'From Date', fieldName : 'Fro_Date__c'},
-    {label : 'To Date', fieldName : 'To_Date__c'},
-    {label : 'Status', fieldName : 'Status__c'},
-    {label : 'Reason', fieldName : 'Reason__c'},
-    {label : 'Manager Comment', fieldName : 'Manager_Comment__c'},
+    {label : 'Request Id', fieldName : 'Name', cellAttributes : {class : {fieldName : 'cellClass'}}},
+    {label : 'From Date', fieldName : 'From_Date__c', cellAttributes : {class : {fieldName:'cellClass'}}},
+    {label : 'To Date', fieldName : 'To_Date__c', cellAttributes : {class : {fieldName : 'cellClass'}}},
+    {label : 'Status', fieldName : 'Status__c', cellAttributes : {class : {fieldName : 'cellClass'}}},
+    {label : 'Reason', fieldName : 'Reason__c', cellAttributes : {class: {fieldName : 'cellClass'}}},
+    {label : 'Manager Comment', fieldName : 'Manager_Comment__c', cellAttributes : {class : {fieldName : 'cellClass'}}},
     {
         type : "button",
         typeAttributes : {
@@ -14,7 +14,7 @@ const COLUMNS = [
             name : 'Edit',
             title : 'Edit',
             value : 'edit'
-        }
+        }, cellAttributes : {class : {fieldName : 'cellClass'}}
     }
 ];
 
@@ -28,7 +28,10 @@ export default class MyLeaves extends LightningElement {
         this.myLeaveResult = result;
 
         if(result.data){
-            this.myLeaves = result.data;
+            this.myLeaves = result.data.map(a => ({
+                ...a,
+                cellClass : a.Status__c == 'Approved' ? 'slds-theme_success' : a.Status__c == 'Rejected' ? 'slds-theme_warning' : ''
+            }));
         }
         if(result.error){
             console.log('Error Occured While Fetching My leaves', result.err);
