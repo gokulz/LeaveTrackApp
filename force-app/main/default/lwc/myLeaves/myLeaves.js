@@ -70,15 +70,23 @@ export default class MyLeaves extends LightningElement {
     }
      submitHandler(event){
         event.preventDefault();
-        const fields = {...event.detail.fields};
-        fields.Status__c = 'Pending';
-        if(new Date(fields.From_Date__c > new Date(fields.To_Date__c))){
-            this.showToast('Date should not be greater than to date', 'Error', 'error');
-        }
-        else if(new Date > new Date(fields.From_Date__c)){
-            this.showToast('From date should not be less than today' , 'Error', 'error');
-        }
-       
+    const fields = { ...event.detail.fields };
+    fields.Status__c = 'Pending';
+
+    const fromDate = new Date(fields.From_Date__c);
+    const toDate = new Date(fields.To_Date__c);
+    const today = new Date();
+
+    // Correct the date comparisons
+    if (fromDate > toDate) {
+        this.showToast('From date should not be greater than To date', 'Error', 'error');
+    } 
+    else if (fromDate < today) {
+        this.showToast('From date should not be less than today', 'Error', 'error');
+    } 
+    else {
+        this.refs.leaveRequestFrom.submit(fields);
+    }
      }
 
    showToast(message, title, variant){
